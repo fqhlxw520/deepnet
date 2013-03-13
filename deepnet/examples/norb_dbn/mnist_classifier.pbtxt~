@@ -1,0 +1,140 @@
+name: "mnist_classifier_pretrained"
+model_type: FEED_FORWARD_NET
+layer {
+  name: "input_layer"
+  dimensions: 1024
+  param {
+    name: "bias"
+    initialization: CONSTANT
+  }
+  is_input: true
+  loss_function: SQUARED_LOSS
+  hyperparams {
+    sparsity: true
+    dropout_prob: 0.5
+  }
+  data_field {
+    train: "train_full_data"
+    test: "test_data"
+  }
+  performance_stats {
+    compute_error: true
+    compute_correct_preds: true
+  }
+  shape: 32
+  shape: 32
+}
+layer {
+  name: "output_layer"
+  dimensions: 1
+  numlabels: 5
+  param {
+    name: "bias"
+    initialization: CONSTANT
+  }
+  is_output: true
+  loss_function: CROSS_ENTROPY
+  hyperparams {
+    sparsity: true
+    dropout: true
+    apply_l2_decay: false
+    activation: SOFTMAX
+    enable_display: true
+  }
+  data_field {
+    train: "train_full_labels"
+    test: "test_labels"
+  }
+  performance_stats {
+    compute_correct_preds: true
+    compute_cross_entropy: true
+  }
+}
+layer {
+  name: "hidden1"
+  dimensions: 1024
+  param {
+    name: "bias"
+    initialization: PRETRAINED
+    pretrained_model: "/media/78C815E3C815A104/norb_cuda_test/fu/mnist_rbm1_LAST"
+  }
+  hyperparams {
+    sparsity_target: 0.1
+    apply_l2_decay: false
+  }
+  performance_stats {
+    compute_sparsity: true
+  }
+  shape: 32
+  shape: 32
+}
+layer {
+  name: "hidden2"
+  dimensions: 1024
+  param {
+    name: "bias"
+    initialization: PRETRAINED
+    pretrained_model: "/media/78C815E3C815A104/norb_cuda_test/fu/mnist_dbn2_rbm_LAST"
+  }
+  hyperparams {
+    sparsity_target: 0.1
+    apply_l2_decay: false
+  }
+  performance_stats {
+    compute_sparsity: false
+  }
+  shape: 32
+  shape: 16
+}
+
+edge {
+  node1: "input_layer"
+  node2: "hidden1"
+  param {
+    name: "weight"
+    initialization: PRETRAINED
+    pretrained_model: "/media/78C815E3C815A104/norb_cuda_test/fu/mnist_rbm1_LAST"
+  }
+  receptive_field_width: 32
+  display_rows: 32
+  display_cols: 32
+}
+edge {
+  node1: "hidden1"
+  node2: "hidden2"
+  param {
+    name: "weight"
+    initialization: PRETRAINED
+    pretrained_model: "/media/78C815E3C815A104/norb_cuda_test/fu/mnist_dbn2_rbm_LAST"
+  }
+}
+
+edge {
+  node1: "hidden2"
+  node2: "output_layer"
+  param {
+    name: "weight"
+    initialization: DENSE_GAUSSIAN_SQRT_FAN_IN
+    sigma: 1.0
+  }
+}
+hyperparams {
+  base_epsilon: 0.5
+  epsilon_decay: NONE
+  epsilon_decay_half_life: 5000
+  initial_momentum: 0.9
+  final_momentum: 0.9
+  momentum_change_steps: 3000
+  sparsity: true
+  sparsity_target: 0.1
+  sparsity_cost: 0.001
+  sparsity_damping: 0.9
+  dropout: true
+  dropout_prob: 0.5
+  apply_weight_norm: false
+  weight_norm: 3.0
+  apply_l2_decay: true
+  l2_decay: 0.001
+  activation: LOGISTIC
+  enable_display: true
+}

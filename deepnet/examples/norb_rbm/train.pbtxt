@@ -1,0 +1,13 @@
+optimizer: CD
+stopcondition {
+  all_processed: false
+  steps: 1000
+}
+train: true
+batchsize: 10
+data_proto: "/media/78C815E3C815A104/norb_cuda_test/mnist.pbtxt"
+eval_after: 100
+checkpoint_after: 100
+checkpoint_directory: "/media/78C815E3C815A104/norb_cuda_test/fu"
+randomize: true
+show_after: 100

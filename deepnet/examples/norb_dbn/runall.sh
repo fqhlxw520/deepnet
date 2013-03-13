@@ -1,0 +1,12 @@
+#!/bin/bash
+# Trains DBN on MNIST.
+train_deepnet='python ../../trainer.py'
+echo "RBM 1"
+python ../../trainer.py mnist_rbm1.pbtxt train.pbtxt eval.pbtxt 
+echo "RBM 2"
+python ../../trainer.py mnist_rbm2.pbtxt train.pbtxt eval.pbtxt 
+echo "RBM 3"
+#python ../../trainer.py mnist_rbm3.pbtxt train.pbtxt eval.pbtxt 
+echo "Classifier"
+python ../../trainer.py mnist_classifier.pbtxt train_classifier.pbtxt eval.pbtxt 
+
